@@ -15,7 +15,7 @@ router.post("/send-otp", async (req, res) => {
   try {
     const { identifier, targetType } = req.body;
 
-    // ✅ 1. Basic input validation
+    // 1. Basic input validation
     if (!identifier || !targetType) {
       return res.status(400).json({ error: "identifier and targetType are required" });
     }
@@ -24,12 +24,12 @@ router.post("/send-otp", async (req, res) => {
       return res.status(400).json({ error: "targetType must be 'email' or 'phone'" });
     }
 
-    // ✅ 2. For email, check if it's a valid college email
+    // 2. For email, check if it's a valid college email
     if (targetType === "email" && !identifier.endsWith(ALLOWED_COLLEGE_DOMAIN)) {
       return res.status(400).json({ error: "Only college email addresses are allowed" });
     }
 
-    // ✅ 3. Prevent spamming: check for existing OTP (unverified + not expired)
+    // 3. Prevent spamming: check for existing OTP (unverified + not expired)
     const existingOtp = await Otp.findOne({
       identifier,
       targetType,
@@ -41,7 +41,7 @@ router.post("/send-otp", async (req, res) => {
       return res.status(429).json({ error: "OTP already sent. Try again later." });
     }
 
-    // ✅ 4. Generate OTP and expiry
+    // 4. Generate OTP and expiry
    // 1. Generate 4-digit OTP
     const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -58,9 +58,9 @@ router.post("/send-otp", async (req, res) => {
 
     await otpEntry.save();
 
-    new Date(Date.now() + 5 * 60 * 1000) // expires in 5 minutes
+    new Date(Date.now() + 3 * 60 * 1000) // expires in 3 minutes
 
-    // ✅ 5. Save to database
+    // 5. Save to database
     const otp = new Otp({
       identifier,
       targetType,
