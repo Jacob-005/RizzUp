@@ -1,6 +1,8 @@
 import 'package:dating_app/pages/user%20signup/signup_verification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class DetailsFormPage extends StatefulWidget {
   const DetailsFormPage({super.key});
@@ -46,6 +48,23 @@ class _DetailsFormPageState extends State<DetailsFormPage> {
     setState(() {
       _isFormValid = isValid;
     });
+  }
+
+  Future<void> sendOtp(String identifier, String targetType) async {
+    final url = Uri.parse(
+      'http://10.0.2.2:5000/api/send-otp',
+    ); // for Android emulator
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'identifier': identifier, 'targetType': targetType}),
+    );
+
+    if (response.statusCode == 200) {
+      print('✅ OTP sent to $targetType');
+    } else {
+      print('❌ OTP send failed: ${response.body}');
+    }
   }
 
   // Email validation helper
@@ -135,17 +154,30 @@ class _DetailsFormPageState extends State<DetailsFormPage> {
                   child: ElevatedButton(
                     onPressed:
                         _isFormValid
-                            ? () {
+                            ? () async {
+                              print('✅ Button pressed');
+                              await sendOtp(
+                                emailController.text.trim(),
+                                "email",
+                              );
+                              await sendOtp(
+                                phoneController.text.trim(),
+                                "phone",
+                              );
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder:
-                                      (context) =>
-                                          const SignUpVerificationPage(),
+                                      (context) => SignUpVerificationPage(
+                                        email: emailController.text.trim(),
+                                        phone: phoneController.text.trim(),
+                                      ),
                                 ),
                               );
                             }
                             : null,
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           _isFormValid

@@ -2,9 +2,18 @@
 
 import 'package:dating_app/pages/user%20signup/gender_selection.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignUpVerificationPage extends StatefulWidget {
-  const SignUpVerificationPage({super.key});
+  final String email;
+  final String phone;
+
+  const SignUpVerificationPage({
+    super.key,
+    required this.email,
+    required this.phone,
+  });
 
   @override
   State<SignUpVerificationPage> createState() => _SignUpVerificationPageState();
@@ -61,6 +70,44 @@ class _SignUpVerificationPageState extends State<SignUpVerificationPage> {
   // ============================================================================
   void _updateButtonState() {
     setState(() {});
+  }
+
+  Future<void> sendOtp() async {
+    final url = Uri.parse(
+      'http://localhost:5000/api/send-otp',
+    ); // Change to your IP if testing on a device
+    final body = {
+      "identifier": isEmailSelected ? widget.email : widget.phone,
+      "targetType": isEmailSelected ? "email" : "phone",
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+
+      final responseBody = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print("✅ OTP sent successfully!");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseBody['message'] ?? 'OTP sent')),
+        );
+      } else {
+        print("❌ Failed to send OTP: ${responseBody['error']}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseBody['error'] ?? 'Failed to send OTP'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("❌ Error sending OTP: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Something went wrong")));
+    }
   }
 
   bool get _isOtpComplete {
