@@ -163,34 +163,99 @@ class _SignUpVerificationPageState extends State<SignUpVerificationPage> {
     }
   }
 
+  // void _onVerifyPressed() {
+  //   if (!_isOtpComplete) return;
+
+  //   String otp = otpControllers.map((controller) => controller.text).join();
+
+  //   if (otp.length == 4) {
+  //     setState(() {
+  //       if (isEmailSelected) {
+  //         isEmailVerified = true;
+  //       } else if (isSmsSelected) {
+  //         isSmsVerified = true;
+  //       }
+  //     });
+
+  //     if (isSmsVerified) {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => GenderSelectionPage()),
+  //       );
+  //     } else if (isEmailVerified) {
+  //       setState(() {
+  //         isEmailSelected = false;
+  //         isSmsSelected = true;
+  //       });
+  //       _clearOtpFields();
+  //     }
+  //   } else {
+  //     _showErrorDialog();
+  //   }
+  // }
+
   void _onVerifyPressed() {
     if (!_isOtpComplete) return;
 
     String otp = otpControllers.map((controller) => controller.text).join();
 
     if (otp.length == 4) {
-      setState(() {
-        if (isEmailSelected) {
-          isEmailVerified = true;
-        } else if (isSmsSelected) {
-          isSmsVerified = true;
-        }
-      });
-
-      if (isSmsVerified) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => GenderSelectionPage()),
-        );
-      } else if (isEmailVerified) {
-        setState(() {
-          isEmailSelected = false;
-          isSmsSelected = true;
-        });
-        _clearOtpFields();
-      }
+      verifyOtp(otp);
     } else {
       _showErrorDialog();
+    }
+  }
+
+  Future<void> verifyOtp(String otp) async {
+    final url = Uri.parse('http://10.0.2.2:5000/api/verify-otp');
+    final body = {
+      "identifier": isEmailSelected ? widget.email : widget.phone,
+      "targetType": isEmailSelected ? "email" : "phone",
+      "otp": otp,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        print("✅ OTP verified successfully");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseBody['message'] ?? 'OTP verified')),
+        );
+
+        if (isEmailSelected) {
+          setState(() {
+            isEmailVerified = true;
+            isEmailSelected = false;
+            isSmsSelected = true;
+          });
+          _clearOtpFields();
+        } else {
+          setState(() => isSmsVerified = true);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GenderSelectionPage()),
+          );
+        }
+      } else {
+        print("❌ OTP verification failed: ${responseBody['error']}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseBody['error'] ?? 'Invalid OTP')),
+        );
+      }
+    } catch (e) {
+      print("❌ Error verifying OTP: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Something went wrong during verification"),
+        ),
+      );
     }
   }
 

@@ -99,18 +99,18 @@ router.post("/verify-otp", async (req, res) => {
     const record = await Otp.findOne({
       identifier,
       targetType,
-      verified: false
+      verified: false,
+      expiresAt: { $gt: new Date() }
     }).sort({ createdAt: -1 });
 
     if (!record) {
       return res.status(404).json({ error: "OTP not found or already verified" });
     }
 
-    if (record.expiresAt < new Date()) {
-      return res.status(400).json({ error: "OTP has expired" });
-    }
+    // console.log("Received OTP:", otp);
+    // console.log("Stored OTP:", record.otp);
 
-    if (record.otp !== otp) {
+    if (record.otp !== otp.toString()) {
       return res.status(401).json({ error: "Invalid OTP" });
     }
 
