@@ -61,9 +61,9 @@ class _DetailsFormPageState extends State<DetailsFormPage> {
     );
 
     if (response.statusCode == 200) {
-      print('✅ OTP sent to $targetType');
+      print('OTP sent to $targetType');
     } else {
-      print('❌ OTP send failed: ${response.body}');
+      print('OTP send failed: ${response.body}');
     }
   }
 

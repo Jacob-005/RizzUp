@@ -224,7 +224,7 @@ class _SignUpVerificationPageState extends State<SignUpVerificationPage> {
       final responseBody = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        print("✅ OTP verified successfully");
+        print("OTP verified successfully");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseBody['message'] ?? 'OTP verified')),
         );
@@ -244,13 +244,13 @@ class _SignUpVerificationPageState extends State<SignUpVerificationPage> {
           );
         }
       } else {
-        print("❌ OTP verification failed: ${responseBody['error']}");
+        print("OTP verification failed: ${responseBody['error']}");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseBody['error'] ?? 'Invalid OTP')),
         );
       }
     } catch (e) {
-      print("❌ Error verifying OTP: $e");
+      print("Error verifying OTP: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Something went wrong during verification"),

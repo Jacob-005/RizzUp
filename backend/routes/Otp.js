@@ -19,7 +19,7 @@ function generateOtp() {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
-// ✅ SEND OTP
+// SEND OTP
 router.post("/send-otp", async (req, res) => {
   try {
     const { identifier, targetType } = req.body;
@@ -42,21 +42,21 @@ router.post("/send-otp", async (req, res) => {
       }
     }
 
-    // // Prevent OTP spamming
-    // const existingOtp = await Otp.findOne({
-    //   identifier,
-    //   targetType,
-    //   verified: false,
-    //   expiresAt: { $gt: new Date() }
-    // });
+    // Prevent OTP spamming
+    const existingOtp = await Otp.findOne({
+      identifier,
+      targetType,
+      verified: false,
+      expiresAt: { $gt: new Date() }
+    });
 
-    // if (existingOtp) {
-    //   return res.status(429).json({ error: "OTP already sent. Try again later." });
-    // }
+    if (existingOtp) {
+      return res.status(429).json({ error: "OTP already sent. Try again later." });
+    }
 
     // Generate new OTP
     const otpCode = generateOtp();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+    const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes from now
 
     // Save OTP to database
     await Otp.findOneAndUpdate(
@@ -68,7 +68,7 @@ router.post("/send-otp", async (req, res) => {
       },
       { upsert: true, new: true }
     );
-    // console.log("✅ OTP stored in DB:", savedOtp);
+    // console.log("OTP stored in DB:", savedOtp);
 
     // Send OTP
      if (targetType === "email") {
@@ -82,12 +82,12 @@ router.post("/send-otp", async (req, res) => {
 
     return res.status(200).json({ message: "OTP sent successfully ✅" });
   } catch (err) {
-    console.error("❌ Error in /send-otp:", err);
+    console.error("Error in /send-otp:", err);
     return res.status(500).json({ error: "Server error" });
   }
 });
 
-// ✅ VERIFY OTP
+// VERIFY OTP
 router.post("/verify-otp", async (req, res) => {
   try {
     const { identifier, targetType, otp } = req.body;
@@ -120,7 +120,7 @@ router.post("/verify-otp", async (req, res) => {
 
     return res.status(200).json({ message: "OTP verified successfully ✅" });
   } catch (err) {
-    console.error("❌ Error in /verify-otp:", err);
+    console.error("Error in /verify-otp:", err);
     return res.status(500).json({ error: "Server error while verifying OTP" });
   }
 });
