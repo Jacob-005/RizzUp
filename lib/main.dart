@@ -1,6 +1,7 @@
 import 'package:dating_app/pages/homepage/homepage.dart';
 import 'package:dating_app/pages/splash%20screen/animated_splash_screen.dart';
 import 'package:dating_app/pages/onboarding%20and%20landing/onboarding_pages.dart';
+import 'package:dating_app/pages/user%20signup/details_form.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       // Define all routes
       routes: {
-        '/': (context) => const SplashScreenWrapper(),
+        '/': (context) => const DetailsFormPage(),
         '/onboarding': (context) => const OnboardingPages(),
         '/home': (context) => const HomePage(),
       },
