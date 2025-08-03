@@ -2,7 +2,8 @@ import 'package:dating_app/pages/user%20signup/sexual_orientation.dart';
 import 'package:flutter/material.dart';
 
 class GenderSelectionPage extends StatefulWidget {
-  const GenderSelectionPage({super.key});
+  final String email;
+  const GenderSelectionPage({super.key, required this.email});
 
   @override
   State<GenderSelectionPage> createState() => _GenderSelectionPageState();

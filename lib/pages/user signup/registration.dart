@@ -186,7 +186,16 @@ class _RegistrationFormPageState extends State<RegistrationFormPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DetailsFormPage(),
+                                  builder:
+                                      (context) => DetailsFormPage(
+                                        firstName:
+                                            firstNameController.text.trim(),
+                                        lastName:
+                                            lastNameController.text.trim(),
+                                        dob: _dobController.text.trim(),
+                                        place: _placeController.text.trim(),
+                                        course: _selectedCourse!,
+                                      ),
                                 ),
                               );
                             }

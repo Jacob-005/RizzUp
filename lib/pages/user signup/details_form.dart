@@ -5,7 +5,20 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DetailsFormPage extends StatefulWidget {
-  const DetailsFormPage({super.key});
+  final String firstName;
+  final String lastName;
+  final String dob;
+  final String place;
+  final String course;
+
+  const DetailsFormPage({
+    super.key,
+    required this.firstName,
+    required this.lastName,
+    required this.dob,
+    required this.place,
+    required this.course,
+  });
 
   @override
   State<DetailsFormPage> createState() => _DetailsFormPageState();
@@ -172,6 +185,11 @@ class _DetailsFormPageState extends State<DetailsFormPage> {
                                       (context) => SignUpVerificationPage(
                                         email: emailController.text.trim(),
                                         phone: phoneController.text.trim(),
+                                        firstName: widget.firstName,
+                                        lastName: widget.lastName,
+                                        dob: widget.dob,
+                                        place: widget.place,
+                                        course: widget.course,
                                       ),
                                 ),
                               );

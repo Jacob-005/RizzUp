@@ -8,11 +8,21 @@ import 'dart:convert';
 class SignUpVerificationPage extends StatefulWidget {
   final String email;
   final String phone;
+  final String firstName;
+  final String lastName;
+  final String dob;
+  final String place;
+  final String course;
 
   const SignUpVerificationPage({
     super.key,
     required this.email,
     required this.phone,
+    required this.firstName,
+    required this.lastName,
+    required this.dob,
+    required this.place,
+    required this.course,
   });
 
   @override
@@ -240,7 +250,9 @@ class _SignUpVerificationPageState extends State<SignUpVerificationPage> {
           setState(() => isSmsVerified = true);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => GenderSelectionPage()),
+            MaterialPageRoute(
+              builder: (context) => GenderSelectionPage(email: widget.email),
+            ),
           );
         }
       } else {
